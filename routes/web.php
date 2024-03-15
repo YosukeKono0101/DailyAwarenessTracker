@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DailyStatController;
 use App\Http\Controllers\GoalController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\CustomMetricController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -22,6 +23,8 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard')->middleware('auth');
+
+Route::resource('custom_metrics', CustomMetricController::class);
 
 Route::middleware('auth')->group(function () {
     Route::get('/dailystats', [DailyStatController::class, 'index'])->name('dailystats.index');

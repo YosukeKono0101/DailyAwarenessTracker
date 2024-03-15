@@ -13,7 +13,13 @@
                     <div class="mt-4">
                         <p><strong>Time Spent:</strong> {{ $dailystat->time }}</p>
                         <p><strong>Quality Score:</strong> {{ $dailystat->quality_score }}</p>
-                        <p><strong>Diary:</strong> {{ $dailystat->diary }}</p>
+                        <p><strong>Diary:</strong> {{ $dailystat->diary }}</p>                        
+                        @if($dailystat->customMetrics->isNotEmpty())                    
+                        <h4 class="text-lg font-semibold">Custom Metrics</h4>
+                        @foreach($dailystat->customMetrics as $metric)
+                        <p><strong>{{ $metric->name }}:</strong> {{ $metric->value }}</p>
+                        @endforeach 
+                        @endif
                     </div>
                     <a href="{{ route('dailystats.index') }}" class="mt-4 inline-flex items-center px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white text-sm font-medium rounded-md">
                         Back to List

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\CustomMetric;
 
 class DailyStat extends Model
 {
@@ -12,6 +13,11 @@ class DailyStat extends Model
     public function user() {
         return $this->belongsTo(User::class);
     }    
-    protected $fillable = ['date', 'time', 'quality_score', 'diary', 'user_id'];
 
+    public function customMetrics() {
+    return $this->hasMany(CustomMetric::class);
+    }
+
+
+    protected $fillable = ['date', 'time', 'quality_score', 'diary', 'user_id', ];    
 }

@@ -20,12 +20,7 @@
          bg-center bg-gray-100 dark:bg-dots-lighter dark:bg-gray-900 selection:bg-red-500 selection:text-black">            
             @if (Route::has('login'))
                 <div class="sm:fixed sm:top-0 sm:right-0 p-6 text-right z-10">
-                    @auth                  
-                    <div class="shrink-0 flex items-center">
-                        <a href="{{ route('dashboard') }}">
-                            <img src="{{asset('images/activity-tracker.png') }}" class="block h-9 w-auto" alt="Tracker Logo">
-                        </a>                      
-                    </div>
+                    @auth                    
                         <a href="{{ url('/dashboard') }}" class="text-lg  text-black">Dashboard</a>
                     @else
                         <a href="{{ route('login') }}" class="text-lg text-black">Log in</a>

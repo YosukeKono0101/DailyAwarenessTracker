@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{__('Edit Daily Stat')}}
+            {{__('Add/Edit Daily Stat')}}
         </h2>
     </x-slot>
 
@@ -37,6 +37,17 @@
                         <div class="mb-4">
                             <label for="diary" class="block text-sm font-medium text-gray-700">Diary</label>
                             <textarea name="diary" id="diary" rows="4" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border border-gray-300 rounded-md">{{ $dailystat->diary }}</textarea>
+                        </div>
+
+                        <div id="custom-metrics-container">
+                            <h4 class="mb-2">Custom Metrics</h4>
+                            @foreach($dailystat->customMetrics as $index => $metric)
+                                <div class="mb-4">
+                                    <label class="block text-sm font-medium text-gray-700">Metric Name</label>
+                                    <input type="text" name="custom_metrics[{{ $index }}][name]" value="{{ $metric->name }}" class="block w-full mb-2" />
+                                    <input type="text" name="custom_metrics[{{ $index }}][value]" value="{{ $metric->value }}" class="block w-full" />
+                                </div>
+                            @endforeach
                         </div>
 
                         <div class="flex items-center justify-end mt-4">

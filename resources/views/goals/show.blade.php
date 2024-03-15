@@ -30,7 +30,7 @@
                         <span>{{ $goal->deadline ? $goal->deadline->format('Y-m-d') : 'No Deadline Specified' }}</span>
                     </div>                    
                     
-                    <a href="{{ route('goals.index') }}" class="btn btn-primary mt-4">Back to List</a>
+                    <a href="{{ route('goals.index') }}" class="mt-4 inline-flex items-center px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white text-sm font-medium rounded-md">Back to List</a>                                        
                 </div>
             </div>
         </div>
