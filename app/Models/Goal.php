@@ -8,4 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class Goal extends Model
 {
     use HasFactory;
+
+    public function user() {
+        return $this->belongsTo(User::class);
+    }
+
+    protected $fillable = ['title', 'notes', 'category', 'priority', 'deadline', 'user_id'];    
+    protected $casts = [
+        'deadline'=> 'datetime',
+    ];
 }

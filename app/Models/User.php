@@ -9,7 +9,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
-{
+{        
     use HasApiTokens, HasFactory, Notifiable;
 
     /**
@@ -42,4 +42,12 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function dailystats() {
+        return $this->hasMany(DailyStat::class);
+    }
+
+    public function goals() {
+        return $this->hasMany(Goal::class);
+    }
 }
