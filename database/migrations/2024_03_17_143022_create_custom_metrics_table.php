@@ -14,12 +14,12 @@ return new class extends Migration
         Schema::create('custom_metrics', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
-            $table->string('metric_name');
-            $table->string('metric_type');
-            $table->text('metric_value');
-            $table->timestamps();
-        
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->unsignedBigInteger('daily_stat_id');
+            $table->foreign('daily_stat_id')->references('id')->on('daily_stats')->onDelete('cascade');
+            $table->string('name');
+            $table->string('value');
+            $table->timestamps();
         });
     }
 

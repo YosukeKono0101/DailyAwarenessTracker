@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\CustomMetric;
 
 class DailyStat extends Model
 {
@@ -19,5 +18,6 @@ class DailyStat extends Model
     }
 
 
-    protected $fillable = ['date', 'time', 'quality_score', 'diary', 'user_id', ];    
+    protected $fillable = ['date', 'time', 'quality_score', 'diary', 'user_id', 'name', 'value']; 
+
 }

@@ -8,19 +8,15 @@ use App\Models\CustomMetric;
 
 class DailyStatController extends Controller
 {
-
     // Read
     public function index(){
     $dailystats = DailyStat::orderBy('date', 'desc')->get();
     return view('dailystats.index', compact('dailystats'));
-}
-
-
+    }
     public function show($id) {
         $dailystat = DailyStat::findOrFail($id);
         return view('dailystats.show', compact('dailystat'));
     }
-
     // Create
     public function create() {
         return view('dailystats.create');
