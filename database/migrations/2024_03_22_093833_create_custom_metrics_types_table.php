@@ -11,16 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('daily_stats', function (Blueprint $table) {
-            $table->id();        
+        Schema::create('custom_metric_types', function (Blueprint $table) {
+            $table->id();
             $table->unsignedBigInteger('user_id');
+            $table->string('name');
+            $table->string('type')->default('integer'); // 'integer', 'string'
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->date('date');
-            $table->integer('time');
-            $table->string('quality_score');
-            $table->text('diary')->nullable();
             $table->timestamps();
         });
+        
     }
 
     /**
@@ -28,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('daily_stats');
+        Schema::dropIfExists('custom_metrics_types');
     }
 };

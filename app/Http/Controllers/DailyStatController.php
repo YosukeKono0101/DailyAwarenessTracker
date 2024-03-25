@@ -5,117 +5,154 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\DailyStat;
 use App\Models\CustomMetric;
+use App\Models\CustomMetricType;
+
 
 class DailyStatController extends Controller
-{
-    // Read
-    public function index(){
-    $dailystats = DailyStat::orderBy('date', 'desc')->get();
-    return view('dailystats.index', compact('dailystats'));
+{    
+    public function index()
+    {
+        $dailystats = DailyStat::where('user_id', auth()->id())->orderBy('date', 'desc')->get();
+        return view('dailystats.index', compact('dailystats'));
     }
-    public function show($id) {
-        $dailystat = DailyStat::findOrFail($id);
+
+    public function create()
+    {
+        $metricTypes = CustomMetricType::where('user_id', auth()->id())->get();
+        return view('dailystats.create', compact('metricTypes'));
+    }
+ 
+    public function show(DailyStat $dailystat)
+    {        
+        if(auth()->id() !== $dailystat->user_id) {
+            abort(403);
+        }
+
         return view('dailystats.show', compact('dailystat'));
     }
-    // Create
-    public function create() {
-        return view('dailystats.create');
+        
+    public function store(Request $request)
+{
+    $customMessages = [
+        'hours.required' => 'The time field is required.',
+        'metrics.*.value.required' => 'Each metric must have a value.',
+    ];
+    $validated = $request->validate([
+        'date' => 'required|date',
+        'hours' => 'required|integer',
+        'minutes' => 'required|integer',
+        'quality_score' => 'required|string',
+        'diary' => 'nullable|string',
+        'metrics' => 'nullable|array',
+        'metrics.*.type_id' => 'exists:custom_metric_types,id',
+        'metrics.*.value' => 'required',
+    ], $customMessages);
+
+    $totalMinutes = $validated['hours'] * 60 + $validated['minutes'];
+
+    $dailystat = DailyStat::create([
+        'user_id' => auth()->id(),
+        'date' => $validated['date'],
+        'time' => $totalMinutes,
+        'quality_score' => $validated['quality_score'],
+        'diary' => $validated['diary'],
+    ]);
+
+    if (isset($validated['metrics'])) {
+        foreach ($validated['metrics'] as $metric) {
+            $metricType = CustomMetricType::find($metric['type_id']);
+            if ($metricType) {
+                CustomMetric::create([
+                    'daily_stat_id' => $dailystat->id,
+                    'custom_metric_type_id' => $metric['type_id'],
+                    'name' => $metricType->name,
+                    'type' => $metricType->type,
+                    'value' => $metric['value'],
+                    'user_id' => auth()->id(),
+                ]);
+            }
+        }
     }
 
-    public function store(Request $request) {    
-        $validatedData = $request->validate([            
-            'date' => 'required|date',
-            'hours' => 'required|integer',
-            'minutes' => 'required|integer',
-            'quality_score' => 'required|string',
-            'diary' => 'nullable|string|max:1000'
-        ]);                
-    
-        $totalMinutes = $validatedData['hours'] * 60 + $validatedData['minutes'];
-        
-        $dataToStore = [
-            'user_id' => auth()->id(),
-            'date' => $validatedData['date'],
-            'time' => $totalMinutes,
-            'quality_score' => $validatedData['quality_score'],
-            'diary' => $validatedData['diary'] ?? null
-        ];
+    return redirect()->route('dailystats.index')->with('success', 'DailyStat created successfully.');
+}
 
-        $existingDailyStat = DailyStat::where('user_id', auth()->id())
-                                        ->whereDate('date', $validatedData['date'])
-                                        ->first();
-        if($existingDailyStat) { 
-            return redirect()->back()->withInput()->with('date_error', 'You have already entered data for this date.');
-
+ 
+    public function edit(DailyStat $dailystat)
+    { 
+        if(auth()->id() !== $dailystat->user_id) {
+            abort(403);
         }
         
-        $dailyStat = DailyStat::create($dataToStore);
-            
-        $customMetrics = $request->get('custom_metrics', []);
-        foreach ($customMetrics as $metric) {
-            if (empty($metric['name'])) {
-                continue;
+        $metricTypes = CustomMetricType::where('user_id', auth()->id())->get();
+        return view('dailystats.edit', compact('dailystat', 'metricTypes'));
+    }
+ 
+    public function update(Request $request, DailyStat $dailystat)
+{
+
+    $customMessages = [
+        'hours.required' => 'The time field is required.',
+        'metrics.*.value.required' => 'Each metric must have a value.',
+    ];
+    $validated = $request->validate([
+        'date' => 'required|date',
+        'hours' => 'required|integer',
+        'minutes' => 'required|integer',
+        'quality_score' => 'required|string',
+        'diary' => 'nullable|string',
+        'metrics' => 'nullable|array',
+        'metrics.*.type_id' => 'exists:custom_metric_types,id',
+        'metrics.*.value' => 'required',
+    ], [$customMessages]);
+
+    $totalMinutes = $validated['hours'] * 60 + $validated['minutes'];
+
+    $dailystat->update([
+        'date' => $validated['date'],
+        'time' => $totalMinutes,
+        'quality_score' => $validated['quality_score'],
+        'diary' => $validated['diary'],
+    ]);
+
+    if (isset($validated['metrics'])) {
+        $existingMetrics = $dailystat->customMetrics->keyBy('custom_metric_type_id');
+
+        foreach ($validated['metrics'] as $metric) {
+            $metricType = CustomMetricType::find($metric['type_id']);
+            if ($metricType) {
+                if (isset($existingMetrics[$metric['type_id']])) {
+                    $existingMetrics[$metric['type_id']]->update([
+                        'value' => $metric['value'],
+                        'name' => $metricType->name,
+                        'type' => $metricType->type,
+                    ]);
+                } else {
+                    CustomMetric::create([
+                        'daily_stat_id' => $dailystat->id,
+                        'custom_metric_type_id' => $metric['type_id'],
+                        'value' => $metric['value'],
+                        'name' => $metricType->name,
+                        'type' => $metricType->type,
+                        'user_id' => auth()->id(),
+                    ]);
+                }
             }
-            CustomMetric::create([
-                'daily_stat_id' => $dailyStat->id,
-                'user_id' => auth()->id(),
-                'name' => $metric['name'],
-                'value' => $metric['value'],
-            ]);
-        }                     
-        return redirect()->route('dailystats.index')
-            ->with('success', 'DailyStats created successfully');
+        }
     }
 
-    // Edit
-    public function edit($id){
-        $dailystat = DailyStat::findOrFail($id);
-        return view('dailystats.edit', compact('dailystat'));
-    }
-
-    public function update(Request $request, $id) {
-        $validatedData = $request->validate([            
-            'date' => 'required|date',
-            'hours' => 'required|integer',
-            'minutes' => 'required|integer',
-            'quality_score' => 'required|string',
-            'diary' => 'nullable|string|max:1000'
-        ]);                
-    
-        $totalMinutes = $validatedData['hours'] * 60 + $validatedData['minutes'];
-        
-        $dataToStore = [
-            'user_id' => auth()->id(),
-            'date' => $validatedData['date'],
-            'time' => $totalMinutes,
-            'quality_score' => $validatedData['quality_score'],
-            'diary' => $validatedData['diary'] ?? null
-        ];
-    
-        $dailyStat = DailyStat::create($dataToStore);
-            
-        $customMetrics = $request->get('custom_metrics', []);
-        foreach ($customMetrics as $metric) {
-            if (empty($metric['name'])) {
-                continue;
-            }
-            CustomMetric::create([
-                'daily_stat_id' => $dailyStat->id,
-                'user_id' => auth()->id(),
-                'name' => $metric['name'],
-                'value' => $metric['value'],
-            ]);
-        }                       
-        return redirect()->route('dailystats.index')
-            ->with('success','DailyStat updated successfully');
-    }
-
-    // Destroy
-    public function destroy($id) {
-        $dailystat = DailyStat::findOrFail($id);
-        $dailystat->delete();
-        return redirect()->route('dailystats.index')
-          ->with('success', 'DailyStat deleted successfully');
-    }        
+    return redirect()->route('dailystats.index')->with('success', 'DailyStat updated successfully.');
 }
+
+
+    public function destroy(DailyStat $dailystat)
+    {                
+        if (auth()->id() !== $dailystat->user_id) {            
+            abort(403);
+        }
+        
+        $dailystat->delete();
+        return back()->with('success', 'DailyStat deleted successfully.');
+    }
+} 
 

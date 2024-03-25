@@ -19,9 +19,7 @@ return new class extends Migration
             $table->text('notes');
             $table->string('category')->nullable();            
             $table->string('priority')->nullable();
-            $table->date('deadline')->nullable();
-            //$table->integer('progress')->default(0);            
-            //$table->boolean('is_completed')->default(false);
+            $table->date('deadline')->nullable();           
             $table->timestamps();
         });
     }

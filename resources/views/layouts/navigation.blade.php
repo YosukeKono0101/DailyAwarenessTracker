@@ -20,7 +20,10 @@
                     </x-nav-link>
                     <x-nav-link :href="route('goals.index')" :active="request()->routeIs('goals.*')">
                         {{ __('Goals') }}
-                    </x-nav-link>                    
+                    </x-nav-link>     
+                    <x-nav-link :href="route('custom_metrics_types.index')" :active="request()->routeIs('custom_metric_types.*')">
+                        {{ __('Custom Metrics') }}
+                    </x-nav-link>               
                 </div>
             </div>
 
@@ -85,6 +88,11 @@
         <div class="pt-2 pb-3 space-y-1">
             <x-responsive-nav-link :href="route('goals.index')" :active="request()->routeIs('goals*.')">
                 {{ __('Goals') }}
+            </x-responsive-nav-link>            
+        </div>
+        <div class="pt-2 pb-3 space-y-1">
+            <x-responsive-nav-link :href="route('custom_metrics_types.index')" :active="request()->routeIs('custom_metrics_types.*')">
+                {{ __('Custom Metrics') }}
             </x-responsive-nav-link>
         </div>
 

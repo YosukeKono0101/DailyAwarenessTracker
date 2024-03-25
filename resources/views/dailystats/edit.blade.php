@@ -20,7 +20,12 @@
 
                         <div class="mb-4">
                             <label for="time" class="block text-sm font-medium text-gray-700">Time Spent</label>
-                            <input type="text" name="time" id="time" value="{{ $dailystat->time }}" required class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                            <label for="time" class="block text-sm font-medium text-gray-700">Hours</label>
+                            <input type="number" name="hours" id="hours" value="{{ $dailystat->hours }}" required class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                        </div>
+                        <div class="mb-4">
+                            <label for="time" class="block text-sm font-medium text-gray-700">Minutes</label>
+                            <input type="number" name="minutes" id="minutes" value="{{ $dailystat->minutes }}" required class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
                         </div>
                         
                         <div class="mb-4">

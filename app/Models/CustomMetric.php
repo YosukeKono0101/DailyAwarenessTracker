@@ -14,11 +14,14 @@ class CustomMetric extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function customMetricType()
+    {
+        return $this->belongsTo(CustomMetricType::class);
+    }
+
     public function dailyStat()
     {
         return $this->belongsTo(DailyStat::class);
     }
-
-    protected $fillable = ['daily_stat_id', 'user_id', 'name', 'value'];
-
+    protected $fillable = ['daily_stat_id','custom_metric_type_id', 'user_id', 'value', 'name', 'type'];
 }

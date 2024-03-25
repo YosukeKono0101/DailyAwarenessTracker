@@ -52,9 +52,7 @@ class GoalController extends Controller
             'notes' => 'nullable|max:1000', // Notes are optional
             'category' => 'nullable|string|max:255', // Category is optional
             'priority' => 'nullable|string',
-            'deadline' => 'nullable|date',
-            //'progress' => 'required|integer|between:0,100', 
-            //'is_completed' => 'required|boolean'
+            'deadline' => 'nullable|date',            
         ]);        
 
         Goal::where('id', $id)->update($validatedData);

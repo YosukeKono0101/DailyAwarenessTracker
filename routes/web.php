@@ -5,7 +5,9 @@ use App\Http\Controllers\DailyStatController;
 use App\Http\Controllers\GoalController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\CustomMetricController;
+use App\Http\Controllers\CustomMetricTypeController;
 use Illuminate\Support\Facades\Route;
+
 
 Route::get('/', function () {
     return view('welcome');
@@ -22,7 +24,16 @@ Route::middleware('auth')->group(function () {
     Route::get('/dailystats/{dailystat}', [DailyStatController::class, 'show'])->name('dailystats.show');
     Route::get('/dailystats/{dailystat}/edit', [DailyStatController::class, 'edit'])->name('dailystats.edit');
     Route::put('/dailystats/{dailystat}', [DailyStatController::class, 'update'])->name('dailystats.update');
-    Route::delete('/dailystats/{dailystat}', [DailyStatController::class, 'destroy'])->name('dailystats.destroy');    
+    Route::delete('/dailystats/{dailystat}', [DailyStatController::class, 'destroy'])->name('dailystats.destroy');                    
+});
+
+Route::middleware('auth')->group(function () {
+    Route::resource('custom_metrics', CustomMetricController::class);
+    Route::resource('custom_metric_types', CustomMetricTypeController::class);    
+    Route::get('/custom_metrics_types', [CustomMetricTypeController::class, 'index'])->name('custom_metrics_types.index');
+    Route::get('/custom_metric_types/create', [CustomMetricTypeController::class, 'create'])->name('custom_metric_types.create');
+    Route::delete('/custom_metric_types/{custom_metric}', [CustomMetricTypeController::class,'destroy'])->name('custom_metric_types.destroy');
+
 });
 
 Route::middleware('auth')->group(function () {

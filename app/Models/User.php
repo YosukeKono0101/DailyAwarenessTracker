@@ -43,8 +43,12 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    public function dailystats() {
+    public function dailyStats() {
         return $this->hasMany(DailyStat::class);
+    }
+
+    public function customMetricTypes() {
+        return $this->hasMany(CustomMetricType::class);
     }
 
     public function goals() {

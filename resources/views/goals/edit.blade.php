@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Edit Goal') }}
+            {{ __('Edit Daily Stat') }}
         </h2>
     </x-slot>
 
@@ -9,44 +9,52 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 bg-white border-b border-gray-200">
-                    <form method="POST" action="{{ route('goals.update', $goal->id) }}">
+                    <!-- Validation Errors -->
+                    <x-auth-validation-errors class="mb-4" :errors="$errors" />
+
+                    <form method="POST" action="{{ route('daily_stats.update', $dailyStat->id) }}">
                         @csrf
                         @method('PUT')
-                        
-                        <div class="mb-4">
-                            <label for="title" class="block text-sm font-medium text-gray-700">Title</label>
-                            <input type="text" name="title" id="title" value="{{ $goal->title }}" required class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+
+                        <!-- Date -->
+                        <div>
+                            <x-label for="date" :value="__('Date')" />
+                            <x-input id="date" class="block mt-1 w-full" type="date" name="date" value="{{ $dailyStat->date->format('Y-m-d') }}" required />
                         </div>
-                        
-                        <div class="mb-4">
-                            <label for="notes" class="block text-sm font-medium text-gray-700">Notes</label>
-                            <textarea name="notes" id="notes" rows="4" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border border-gray-300 rounded-md">{{ $goal->notes }}</textarea>
+
+                        <!-- Time Spent -->
+                        <div class="mt-4">
+                            <x-label for="time_spent" :value="__('Time Spent (in minutes)')" />
+                            <x-input id="time_spent" class="block mt-1 w-full" type="number" name="time_spent" value="{{ $dailyStat->time_spent }}" required />
                         </div>
-                        
-                        <div class="mb-4">
-                            <label for="category" class="block text-sm font-medium text-gray-700">Category</label>
-                            <input type="text" name="category" id="category" value="{{ $goal->category }}" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+
+                        <!-- Quality Score -->
+                        <div class="mt-4">
+                            <x-label for="quality_score" :value="__('Quality Score')" />
+                            <x-input id="quality_score" class="block mt-1 w-full" type="number" name="quality_score" value="{{ $dailyStat->quality_score }}" required />
                         </div>
- 
-                        <div class="mb-4">
-                            <label for="priority" class="block text-sm font-medium text-gray-700">Priority</label>
-                            <select name="priority" id="priority" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                                <option value="" {{ $goal->priority === null ? 'selected' : '' }}>Select Priority</option>
-                                <option value="high" {{ $goal->priority === 'high' ? 'selected' : '' }}>High</option>
-                                <option value="medium" {{ $goal->priority === 'medium' ? 'selected' : '' }}>Medium</option>
-                                <option value="low" {{ $goal->priority === 'low' ? 'selected' : '' }}>Low</option>
-                            </select>
+
+                        <!-- Diary -->
+                        <div class="mt-4">
+                            <x-label for="diary" :value="__('Diary')" />
+                            <textarea id="diary" name="diary" rows="4" class="block mt-1 w-full">{{ $dailyStat->diary }}</textarea>
                         </div>
-                        
-                        <div class="mb-4">
-                            <label for="deadline" class="block text-sm font-medium text-gray-700">Deadline</label>
-                            <input type="date" name="deadline" id="deadline" value="{{ $goal->deadline ? $goal->deadline->format('Y-m-d') : '' }}" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+
+                        <!-- Custom Metrics -->
+                        <div class="mt-4">
+                            <h3 class="text-lg font-medium">Custom Metrics</h3>
+                            @foreach ($dailyStat->customMetrics as $customMetric)
+                            <div class="mt-4">
+                                <x-label :value="$customMetric->customMetricType->name" />
+                                <x-input class="block mt-1 w-full" type="text" name="custom_metrics[{{ $customMetric->customMetricType->id }}]" value="{{ $customMetric->value }}" />
+                            </div>
+                            @endforeach
                         </div>
 
                         <div class="flex items-center justify-end mt-4">
-                            <button type="submit" class="ml-4">
+                            <x-button class="ml-4">
                                 {{ __('Update') }}
-                            </button>
+                            </x-button>
                         </div>
                     </form>
                 </div>
